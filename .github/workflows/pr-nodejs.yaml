@@ -1,0 +1,27 @@
+name: Reusable workflow for NodeJs Pull Request
+
+on:
+  workflow_call:
+    inputs:
+      app_name:
+        required: true
+        type: string
+
+jobs:
+  Test:
+    name: App Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Test
+        run: |
+          cd ${{ inputs.app_name }}
+          npm ci
+          npm run test
+      - name: Docker validation
+        uses: ghe-actions/dockerfile-validator@v1
+        with:
+          dockerfile: 'Dockerfile'
+          lint: '${{ inputs.app_name }}/hadolint'
+

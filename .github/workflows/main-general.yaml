@@ -23,10 +23,6 @@ jobs:
     name: CI
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Set Env
-        run: |
-          echo "BUILD_SHA=${GITHUB_SHA:0:7}" >> $GITHUB_ENV
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
@@ -36,10 +32,15 @@ jobs:
         with:
           username: ${{ secrets.repo_username }}
           password: ${{ secrets.repo_token }}
+      - name: Get smart tag
+        id: prepare
+        uses: Surgo/docker-smart-tag-action@v1
+        with:
+          docker_image: ${{ inputs.repo }}
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: ${{ inputs.repo }}:$BUILD_SHA
+          tags: ${{ steps.prepare.outputs.tag }}
           context: "{{defaultContext}}:${{ inputs.context }}"
 

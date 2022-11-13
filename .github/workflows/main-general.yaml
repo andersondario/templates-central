@@ -32,15 +32,10 @@ jobs:
         with:
           username: ${{ secrets.repo_username }}
           password: ${{ secrets.repo_token }}
-      - name: Get smart tag
-        id: prepare
-        uses: Surgo/docker-smart-tag-action@v1
-        with:
-          docker_image: ${{ inputs.repo }}
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: ${{ steps.prepare.outputs.tag }}
+          tags: ${{ inputs.repo }}:${{ github.sha }}
           context: "{{defaultContext}}:${{ inputs.context }}"
 

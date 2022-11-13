@@ -14,7 +14,7 @@ on:
       context:
         required: true
         type: string
-      tag:
+      repo:
         required: true
         type: string
 
@@ -23,6 +23,10 @@ jobs:
     name: CI
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+      - name: Set Env
+        run: |
+          echo "BUILD_SHA=${GITHUB_SHA:0:7}" >> $GITHUB_ENV
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
@@ -36,6 +40,6 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: andersondario/${{ inputs.app_name }}:${{ inputs.tag }}
+          tags: ${{ inputs.repo }}:$BUILD_SHA
           context: "{{defaultContext}}:${{ inputs.context }}"
 

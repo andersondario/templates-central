@@ -9,7 +9,7 @@ on:
 
 jobs:
   Test:
-    name: App Validation
+    name: Pull Request Validation
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -19,6 +19,10 @@ jobs:
           cd ${{ inputs.app_name }}
           npm ci
           npm run test
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       - name: Docker validation
         uses: ghe-actions/dockerfile-validator@v1
         with:
